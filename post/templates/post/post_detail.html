@@ -1,0 +1,8 @@
+<html>
+  <head><title>{{object.title}} - {{object.writer.username}}</title></head>
+  <p style="float: right;"><a href='/posts/'>view posts</a></p>
+  <h1>{{ object.title }}</h1>
+  <p>{{ object.text }}</p>
+  <p>written at {{ object.date }} by {{object.writer.username}}</p>
+  <p><a href=/posts/edit/{{object.pk}}>Edit this Post</a> - <a href=/posts/delete/{{object.pk}}>Delete this Post</a></p>
+</html>

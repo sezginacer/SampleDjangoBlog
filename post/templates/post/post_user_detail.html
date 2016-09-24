@@ -1,0 +1,7 @@
+<html>
+  <head><title>{{object.title}} - {{object.writer.username}}</title></head>
+  <p style="float: right;"><a href='/posts/{{object.writer.username}}/'>view {{object.writer.username}}'s posts</a></p>
+  <h2>{{ object.title }}</h2>
+  <p>{{ object.text }}</p>
+  <p>written at {{ object.date }} by {{object.writer.username}}</p>
+</html>

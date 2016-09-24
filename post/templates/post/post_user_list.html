@@ -1,0 +1,9 @@
+<html>
+  </head><title>{{username}}'s Posts</title></head>
+  <body>
+    {% for post in object_list %}
+      <h3>{{ post.title }} - <a href=/posts/{{username}}/{{post.pk}}>View</a></h3>
+      <br><br>
+    {% endfor %}
+  </body>
+</html>

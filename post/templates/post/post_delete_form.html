@@ -1,0 +1,7 @@
+<html>
+  <head><title>are you sure?</title></head>
+  <form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete "{{ object.title }}"?</p>
+    <input type="submit" value="Confirm" />
+  </form>
+</html>
