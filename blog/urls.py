@@ -34,6 +34,6 @@ urlpatterns = [
     url(r'^edit/(?P<pk>\d+)/$', views.PostUpdateView.as_view(), name='updatepost'),
     url(r'^new/$', login_required(views.PostCreateView.as_view(), login_url='/login/'), name='newpost'),
     url(r'^delete/(?P<pk>\d+)/$', login_required(views.PostDeleteView.as_view(), login_url='/login/'), name='deletepost'),
-    url(r'^(?P<username>\w+)/$', views.UserPostsListView.as_view(), name='userpostslist'),
-    url(r'^(?P<username>\w+)/(?P<pk>\d+)/$', views.UserPostDetailView.as_view(), name='userpostsdetail'),
+    url(r'^profile/(?P<username>\w+)/$', views.UserPostsListView.as_view(), name='userpostslist'),
+    url(r'^profile/(?P<username>\w+)/(?P<pk>\d+)/$', views.UserPostDetailView.as_view(), name='userpostsdetail'),
 ]
