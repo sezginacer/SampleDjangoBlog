@@ -19,6 +19,10 @@ from django.contrib import admin
 from post import views
 from django.contrib.auth.decorators import login_required
 
+admin.site.site_header = 'Blogg Administration Panel'
+admin.site.site_title = 'Blogg Administration'
+# default admin.site.index_title = 'Site administration'
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     # url(r'^posts/', include('post.urls')),
