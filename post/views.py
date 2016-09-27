@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
@@ -8,11 +8,19 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.contrib.auth.models import User
-from models import Post
+from .models import Post
+
+# for REST API
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import PostSerializer
+
+import datetime
 
 # Create your views here.
 
-@login_required(login_url='/posts/login/')
+@login_required(login_url='/login/')
 def index(request):
     # return render(request, 'post/home.html')
     posts = Post.objects.filter(writer=request.user)
@@ -30,14 +38,16 @@ def index(request):
     c = dict(posts=posts, username=request.user.username)
     return render(request, 'post/posts.html', c)
 
+
 @csrf_protect
 def loginn(request):
     # c = {}
     # c.update(csrf(request))
     # return render(request, 'post/login.html', c)
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/posts/')
+        return HttpResponseRedirect('/')
     return render(request, 'post/login.html')
+
 
 def auth(request):
     username = request.POST.get('username', '')
@@ -47,17 +57,18 @@ def auth(request):
 
     if user is not None:
         login(request, user)
-        return HttpResponseRedirect('/posts/') # success
+        return HttpResponseRedirect('/') # success
     else:
-        return HttpResponseRedirect('/posts/login/') # error
+        return HttpResponseRedirect('/login/') # error
+
 
 def authh(request):
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
 
     if (User.objects.filter(username__iexact=username).exists() or username == 'view' or
-        username == 'delete' or username == 'edit'):
-        return HttpResponseRedirect('/posts/register/') # error
+        username == 'delete' or username == 'edit' or username == 'login'):
+        return HttpResponseRedirect('/register/')
 
     user = User.objects.create_user(username=username, password=password)
     '''
@@ -71,17 +82,19 @@ def authh(request):
     user.save()
     '''
     login(request, user)
-    return HttpResponseRedirect('/posts/') # success
+    return HttpResponseRedirect('/') # success
+
 
 def logoutt(request):
     if request.user.is_authenticated:
         logout(request)
-    return HttpResponseRedirect('/posts/login/')
+    return HttpResponseRedirect('/login/')
+
 
 @csrf_protect
 def signup(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/posts/')
+        return HttpResponseRedirect('/')
     else:
         return render(request, 'post/register.html')
 
@@ -101,6 +114,7 @@ class PostDetailView(DetailView):
         return context
     '''
 
+
 class PostUpdateView(UpdateView):
 
     model = Post
@@ -112,6 +126,7 @@ class PostUpdateView(UpdateView):
 
     def get_queryset(self):
         return Post.objects.filter(writer=self.request.user)
+
 
 class PostCreateView(CreateView):
 
@@ -127,6 +142,7 @@ class PostCreateView(CreateView):
         self.object.writer = self.request.user
         return super(PostCreateView, self).form_valid(form)
 
+
 class PostDeleteView(DeleteView):
 
      model = Post
@@ -136,14 +152,23 @@ class PostDeleteView(DeleteView):
      def get_queryset(self):
          return Post.objects.filter(writer=self.request.user)
 
+
 class UserPostsListView(ListView):
 
     model = Post
     template_name_suffix = '_user_list'
+    # context_object_name = 'object_list' # default
+    # paginate_by = 2
 
     def get_queryset(self):
-        user = User.objects.get(username=self.kwargs['username'])
-        #import ipdb; ipdb.set_trace()
+        '''
+        try:
+            user = User.objects.get(username=self.kwargs['username'])
+        except User.DoesNotExist:
+            raise Http404
+        '''
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        # import ipdb; ipdb.set_trace()
         return Post.objects.filter(writer=user)
 
     def get_context_data(self, **kwargs):
@@ -152,11 +177,54 @@ class UserPostsListView(ListView):
         context['username'] = self.kwargs['username']
         return context
 
+
 class UserPostDetailView(DetailView):
 
     model = Post
     template_name_suffix = '_user_detail'
 
     def get_queryset(self):
-        user = User.objects.get(username=self.kwargs['username'])
-        return Post.objects.filter(writer=user)
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        # return get_list_or_404(Post, writer=user) # returns list but must return queryset
+        try:
+            posts = Post.objects.filter(writer=user)
+        except Post.DoesNotExist:
+            raise Http404
+        return posts
+
+
+# Lists all posts or create new one
+class PostListAPI(APIView):
+
+    def get(self, request):
+        if 'username' in request.GET:
+            if User.objects.filter(username__iexact=request.GET.get('username')).exists():
+                user = User.objects.filter(username__iexact=request.GET.get('username'))
+                posts = Post.objects.filter(writer=user)
+                serializer = PostSerializer(posts, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({"message": "Error: No such user"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            posts = Post.objects.all()
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data)
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username = username, password = password)
+        if user is not None:
+            if request.POST.get('title') is not None and request.POST.get('text') is not None:
+                # writer = user
+                title = request.POST.get('title')
+                text = request.POST.get('text')
+                # date = datetime.datetime.now()
+                # post = Post(writer=user, title=title, text=text, date=date)
+                # post.save()
+                Post.objects.create(writer=user, title=title, text=text)
+                return Response({"message": "Post added successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Error! Title and/or Text not provided!"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response({"message": "Error: Authentication Failed!"}, status=status.HTTP_401_UNAUTHORIZED)

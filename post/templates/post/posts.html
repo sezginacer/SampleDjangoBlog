@@ -1,10 +1,10 @@
 <html>
   </head><title>{{username}}'s Posts</title></head>
   <body>
-    <p style="float: right;">{{username}}  -  <a href='/posts/new/'>new one?</a> - <a href=/posts/logout/>logout</a></p>
+    <p style="float: right;">{{username}}  -  <a href='/new/'>new one?</a> - <a href=/logout/>logout</a></p>
     <br><br>
     {% for post in posts %}
-      {{ post.title }} - <a href=/posts/view/{{post.pk}}>View</a> - <a href=/posts/edit/{{post.pk}}>Edit</a> - <a href=/posts/delete/{{post.pk}}>Delete</a>
+      {{ post.title }} - <a href=/view/{{post.pk}}>View</a> - <a href=/edit/{{post.pk}}>Edit</a> - <a href=/delete/{{post.pk}}>Delete</a>
       <br>
     {% endfor %}
   </body>

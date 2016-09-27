@@ -1,13 +1,21 @@
 <html>
   </head><title>Blogg - Register</title></head>
-  <p style="float: right;"><a href='/posts/login/'>already registered?</a></p>
-    <form action='/posts/authh/' method='POST'> {% csrf_token %}
-        <div >
-            <label for='username'> Username </label>
-            <input type='text' name='username' id='username'>
-            <label for='password'>Password </label>
-            <input type='password' name='password' id='password'>
-            <input type='submit' value='register'>
-        </div>
-    </form>
+  <body>
+  <p style="float: right;"><a href='/login/'>already registered?</a></p>
+      <form action='/authh/' method='POST'> {% csrf_token %}
+          <div >
+              <label for='username'> Username </label>
+              <input type='text' name='username' id='username'>
+              <label for='password'>Password </label>
+              <input type='password' name='password' id='password'>
+              <input type='submit' value='register'>
+          </div>
+      </form>
+      <!--<script>
+        {% if alert %}
+            alert("{{ alert }}");
+        {% endif %}
+      </script>
+    -->
+  </body>
 </html>

@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^auth/$', views.auth, name='auth'),
     url(r'^authh/$', views.authh, name='authh'),
     url(r'^logout/$', views.logoutt, name='logout'),
+    url(r'^api/$', views.PostListAPI.as_view(), name='api'),
     url(r'^view/(?P<pk>\d+)/$', views.PostDetailView.as_view(), name='postdetails'),
     url(r'^edit/(?P<pk>\d+)/$', views.PostUpdateView.as_view(), name='updatepost'),
     url(r'^new/$', login_required(views.PostCreateView.as_view(), login_url='/posts/login/'), name='newpost'),

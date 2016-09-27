@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    #'django.contrib.sites.models.Site',
 ]
 
 MIDDLEWARE = [
+    #'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +53,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+'''
+SUBDOMAIN_URLCONFS = {
+    None: 'blog.urls',  # no subdomain, e.g. ``example.com``
+    'www': 'blog.urls',
+    'api': 'post.urls',
+}
+'''
 
 ROOT_URLCONF = 'blog.urls'
 
