@@ -213,7 +213,7 @@ class PostListAPI(APIView):
     def post(self, request):
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(username = username, password = password)
+        user = authenticate(username=username, password=password)
         if user is not None:
             if request.POST.get('title') is not None and request.POST.get('text') is not None:
                 # writer = user
